@@ -16,6 +16,7 @@
             overflow-x: hidden;
             overflow-y: hidden;
             height: 100vh;
+            width: 100vw;
         }
 
         .container {
@@ -73,7 +74,8 @@
             color: white;
             text-align: center;
             padding: 20px;
-            max-width: 80%;
+            max-width: 90%;
+            width: 100%;
         }
 
         h1 {
@@ -221,6 +223,7 @@
             margin-bottom: 20px;
             border: 2px solid white;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
         }
 
         .address {
@@ -229,18 +232,154 @@
             padding: 0 20px;
         }
 
+        /* Enhanced Mobile Responsiveness */
         @media (max-width: 768px) {
             h1 {
-                font-size: 2rem;
+                font-size: 1.8rem;
+                margin-bottom: 15px;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
             }
             
             p {
                 font-size: 1rem;
+                margin-bottom: 20px;
+            }
+            
+            .logo {
+                font-size: 3rem;
+                margin-bottom: 15px;
             }
             
             .btn {
                 padding: 12px 24px;
                 font-size: 1rem;
+            }
+            
+            .content {
+                padding: 15px;
+                max-width: 95%;
+            }
+            
+            .scroll-arrow {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            
+            .scroll-left {
+                left: 10px;
+            }
+            
+            .scroll-right {
+                right: 10px;
+            }
+        }
+
+        /* Small Phone Responsiveness */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+                margin-bottom: 10px;
+            }
+            
+            p {
+                font-size: 0.9rem;
+                margin-bottom: 15px;
+            }
+            
+            p[style*="font-size:xx-large"] {
+                font-size: 1.5rem !important;
+            }
+            
+            p[style*="font-size:x-large"] {
+                font-size: 1.3rem !important;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+                margin-bottom: 10px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            
+            .content {
+                padding: 10px;
+            }
+            
+            .profile-image {
+                width: 80px;
+                height: 92px;
+            }
+            
+            .nav-dot {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .scroll-arrow {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+        }
+
+        /* Prevent scrolling issues on iOS */
+        @supports (-webkit-touch-callout: none) {
+            body, html {
+                height: -webkit-fill-available;
+            }
+            .container, .page {
+                height: -webkit-fill-available;
+            }
+        }
+
+        /* Landscape orientation adjustments */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .content {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+            
+            .logo {
+                font-size: 2.5rem;
+                margin-bottom: 10px;
+            }
+            
+            p {
+                font-size: 0.9rem;
+                margin-bottom: 10px;
+            }
+            
+            .btn {
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .profile-image {
+                width: 70px;
+                height: 80px;
+                margin-bottom: 10px;
+            }
+            
+            .address {
+                margin-top: 5% !important;
+                margin-bottom: 15px;
             }
         }
     </style>
@@ -250,13 +389,9 @@
         <!-- WhatsApp Page -->
         <div class="page whatsapp-page">
             <div class="content">
- 
-                <div >
+                <div>
                     <h1>SHREE SHYAM ASSOCIATES</h1>
                 </div>
-         
-
-
                 <div class="logo">
                     <i class="fab fa-whatsapp"></i>
                 </div>
@@ -269,10 +404,9 @@
         <!-- Instagram Page -->
         <div class="page instagram-page">
             <div class="content">
-                <div >
+                <div>
                     <h1>SHREE SHYAM ASSOCIATES</h1>
                 </div>
-
                 <div class="logo">
                     <i class="fab fa-instagram"></i>
                 </div>
@@ -285,12 +419,9 @@
         <!-- Google Review Page -->
         <div class="page google-page">
             <div class="content">
-
-                <div >
+                <div>
                     <h1>SHREE SHYAM ASSOCIATES</h1>
                 </div>
-
-
                 <div class="logo">
                     <i class="fab fa-google"></i>
                 </div>
@@ -378,28 +509,42 @@
                 }
             });
             
-            // Touch and swipe functionality
+            // Touch and swipe functionality with improved handling
             let touchStartX = 0;
             let touchEndX = 0;
+            let isSwiping = false;
             
             container.addEventListener("touchstart", function(event) {
                 touchStartX = event.changedTouches[0].screenX;
+                isSwiping = true;
             });
             
+            container.addEventListener("touchmove", function(event) {
+                if (!isSwiping) return;
+                // Prevent default to stop page scrolling during swipe
+                event.preventDefault();
+            }, { passive: false });
+            
             container.addEventListener("touchend", function(event) {
+                if (!isSwiping) return;
                 touchEndX = event.changedTouches[0].screenX;
                 handleSwipe();
+                isSwiping = false;
             });
             
             function handleSwipe() {
                 const swipeThreshold = 50;
-                if (touchEndX < touchStartX - swipeThreshold) {
+                const swipeDistance = touchEndX - touchStartX;
+                
+                if (Math.abs(swipeDistance) < swipeThreshold) return;
+                
+                if (swipeDistance < 0) {
                     // Swipe left
                     if (currentIndex < pageCount - 1) {
                         currentIndex++;
                         updatePosition();
                     }
-                } else if (touchEndX > touchStartX + swipeThreshold) {
+                } else {
                     // Swipe right
                     if (currentIndex > 0) {
                         currentIndex--;
@@ -437,7 +582,6 @@
             
             visitWebsite.addEventListener("click", function(e) {
                 e.preventDefault();
-                // Replace with your website URL
                 window.open("https://shreeshyamassociate.com/", "_blank");
             });
             
@@ -448,16 +592,49 @@
                 });
             });
 
-            // Wheel event for desktop scrolling
+            // Wheel event for desktop scrolling with debounce
+            let wheelTimer;
             document.addEventListener("wheel", function(event) {
-                if (event.deltaX > 50 && currentIndex < pageCount - 1) {
-                    currentIndex++;
-                    updatePosition();
-                } else if (event.deltaX < -50 && currentIndex > 0) {
-                    currentIndex--;
-                    updatePosition();
-                }
+                clearTimeout(wheelTimer);
+                wheelTimer = setTimeout(function() {
+                    if (event.deltaX > 50 && currentIndex < pageCount - 1) {
+                        currentIndex++;
+                        updatePosition();
+                    } else if (event.deltaX < -50 && currentIndex > 0) {
+                        currentIndex--;
+                        updatePosition();
+                    }
+                }, 50);
             });
+            
+            // Fix for iOS height issues
+            function setHeight() {
+                let vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            }
+            
+            // Set initial height
+            setHeight();
+            
+            // Update height on resize
+            window.addEventListener('resize', setHeight);
+            
+            // Fix for double-tap zoom on iOS
+            document.addEventListener('touchend', function(event) {
+                const now = Date.now();
+                const DOUBLE_TAP_THRESHOLD = 300;
+                if (now - lastTap < DOUBLE_TAP_THRESHOLD) {
+                    event.preventDefault();
+                }
+                lastTap = now;
+            }, { passive: false });
+            
+            // Handle orientation changes
+            window.addEventListener('orientationchange', function() {
+                setTimeout(setHeight, 100);
+            });
+            
+            let lastTap = 0;
         });
     </script>
 </body>
